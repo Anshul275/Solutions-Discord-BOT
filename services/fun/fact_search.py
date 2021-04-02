@@ -19,8 +19,8 @@ def fact_search(mainSite, search):
         
     else:
         try:
-            year = int(search)
-            endpoint = "/" + str(year) + "/year"
+            num_or_year = int(search)
+            endpoint = "/" + str(num_or_year) + "/year"
             url = mainSite + endpoint
             query = {"fragment": "true", "json": "true"}
             headers = {
@@ -45,5 +45,4 @@ def fact_result(search):
     except:
         print("Server doesn't respond to requests........")
 
-    # Return the string after filtering google_data
     return fact_data
