@@ -232,5 +232,5 @@ async def on_raw_reaction_add(payload):
                 await msg.remove_reaction(payload.emoji, payload.member)            
 
 
-#keep_alive()
+keep_alive()
 client.run(TOKEN)
