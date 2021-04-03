@@ -24,7 +24,7 @@ from services.nsfw.nsfw import nsfw_images
 
 scheduler = AsyncIOScheduler()
 
-TOKEN = "ODIwNzE5Mjk0MzA3NTAwMDQy.YE5QZw.vYq_nrSbquJw_Lgy5tNcjLtIjRA"
+TOKEN = "<Application_Token>"
 
 
 client = discord.Client()
