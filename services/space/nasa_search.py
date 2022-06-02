@@ -2,6 +2,14 @@ import requests
 import json
 import random
 
+def filter_href(data):
+    link = ""
+    for ch in data:
+        if ch == ' ':
+          link += "%20"
+        else :
+          link += ch
+    return link
 
 def search_nasa(url, search):
     query = {'q': search}
@@ -15,7 +23,7 @@ def search_nasa(url, search):
     if len(image_list) >= 1:
         image = random.choice(image_list)
         nasa_text = image['data'][0]['description'] + "\n"
-        nasa_image = image['links'][0]['href']
+        nasa_image = filter_href(image['links'][0]['href'])
     else:
         nasa_image = "```No related images from NASA........```\n"
 

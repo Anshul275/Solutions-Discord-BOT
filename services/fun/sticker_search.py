@@ -4,10 +4,10 @@ import random
 
 API_KEY = "zEVaIxFAhZhWzPakjs9XsN0xdmZ3vDJg"
 
-def trend_stickr(mainSite):
+def trend_sticker(mainSite):
     endpoint = "/v1/stickers/trending"
     url = mainSite + endpoint
-    query = {'api_key': API_KEY, 'limit': 10}
+    query = {'api_key': API_KEY, 'limit': 20}
 
     response = requests.get(url, params = query)
     json_data = json.loads(response.text)
@@ -23,7 +23,7 @@ def trend_stickr(mainSite):
 
     return sticker
 
-def search_stickr(mainSite, search):
+def search_sticker(mainSite, search):
     endpoint = "/v1/stickers/search"
     url = mainSite + endpoint
     query = {'q': search, 'api_key': API_KEY}
@@ -43,19 +43,19 @@ def search_stickr(mainSite, search):
     return sticker
 
 
-def stickr_image(search):
+def sticker_image(search):
     mainSite = "https://api.giphy.com"
 
     stickr = ""
 
     if search == "trend":
         try:
-            stickr = trend_stickr(mainSite)
+            stickr = trend_sticker(mainSite)
         except:
             print("Server doesn't respond to requests........")
     else:
         try:
-            stickr = search_stickr(mainSite, search)
+            stickr = search_sticker(mainSite, search)
         except:
             print("Server doesn't respond to requests........")
 

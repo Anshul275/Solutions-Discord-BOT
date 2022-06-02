@@ -1,10 +1,8 @@
 import discord
 import os
+from dotenv import load_dotenv
 from datetime import datetime, timedelta
-from discord.ext.commands import Cog
-from discord.ext.commands import Bot as bot
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.interval import IntervalTrigger
 from run_forever.server_alive import keep_alive
 
 from services.programming.stackOverflow import stackOverflow_result
@@ -12,20 +10,25 @@ from services.fun.poll import filter_poll_data
 from services.fun.poll import getOptions
 from services.fun.remind import filter_reminder_data
 from services.search.google import google_result
+from services.search.google import google_image_result
+from services.search.google import google_news_result
+from services.search.weather import weather_result
+from services.search.weather import forecast_result
+from services.search.weather import hourly_forecast_result
+from services.search.local_time import local_time_result
+from services.search.iplookup import iplookup_result
 from services.search.web_search import web_result
+from services.search.urban_dict import dict_search
 from services.space.nasa_search import nasa_image
 from services.fun.img_search import img_result
 from services.fun.fact_search import fact_result
 from services.fun.gif_search import gif_image
-from services.fun.stickr_search import stickr_image
-from services.nsfw.nsfw import nsfw_search
-from services.nsfw.nsfw import nsfw_result
-from services.nsfw.nsfw import nsfw_images
+from services.fun.sticker_search import sticker_image
 
 scheduler = AsyncIOScheduler()
 
-TOKEN = "<Application_Token>"
-
+#FOR TOKEN
+load_dotenv()
 
 client = discord.Client()
 
@@ -74,7 +77,7 @@ async def on_message(message):
         msg_content = msg_content.split('-stack ', 1)
         if len(msg_content) == 2:
             content = stackOverflow_result(msg_content[1])
-            greet = "\nHope this helps, HaPPy CoDing!\n"
+            greet = "\n**Hope this helps, HaPPy CoDing!**\n"
             await message.channel.send(content + greet)
         else:
             await message.channel.send("```Error Input or Nothing to search.........```")
@@ -144,18 +147,112 @@ async def on_message(message):
         msg_content = msg_content.split('-google ', 1)
         if len(msg_content) == 2:
             content = google_result(msg_content[1])
-            greet = "\nHope this helps!\n"
+            greet = "\n**Hope this helps!**\n"
             await message.channel.send(content + greet)
         else:
             await message.channel.send("```Error Input or Nothing to search.........```")
+
+    elif msg_content.startswith('-gimg'):
+        msg_content = msg_content.split('-gimg ', 1)
+        if len(msg_content) == 2:
+            images = google_image_result(msg_content[1])
+            if len(images) == 0:
+                await message.channel.send("```No images found :(((((```")
+            for image in images:
+                await message.channel.send(image)
+            greet = "**Hope this helps!**"
+            await message.channel.send(greet)
+            
+        else:
+            await message.channel.send("```Error Input or No Image found on search.........```")
     
+    elif msg_content.startswith('-gnews'):
+        msg_content = msg_content.split('-gnews ', 1)
+        if len(msg_content) == 2:
+            content = google_news_result(msg_content[1])
+            greet = "\n**Hope this helps!**\n"
+            await message.channel.send(content + greet)
+        else:
+            await message.channel.send("```Error Input or Nothing to search.........```")
+
+    elif msg_content.startswith('-weather'):
+        msg_content = msg_content.split('-weather ', 1)
+        if len(msg_content) == 2:
+            content, image = weather_result(msg_content[1])
+            if content == "":
+                content = "```No data related to searched place.....```"
+            if image != "":
+                await message.channel.send(image)
+            await message.channel.send(content)
+        else:
+            await message.channel.send("```Error Input or Nothing to search.........```")
+
+    elif msg_content.startswith('-forecast'):
+        msg_content = msg_content.split('-forecast ', 1)
+        if len(msg_content) == 2:
+            place, images, forecast_data = forecast_result(msg_content[1])
+            if place == "":
+                await message.channel.send("```No data related to searched place.....```")
+            else:
+                await message.channel.send(place)
+                for i in range(0, len(images)):
+                    await message.channel.send(images[i])
+                    await message.channel.send(forecast_data[i])
+        else:
+            await message.channel.send("```Error Input or Nothing to search.........```")
+    
+    elif msg_content.startswith('-hourly_forecast'):
+        msg_content = msg_content.split('-hourly_forecast ', 1)
+        if len(msg_content) == 2:
+            place, images, hourly_data = hourly_forecast_result(msg_content[1])
+            if place == "":
+                await message.channel.send("```No data related to searched place.....```")
+            else:
+                await message.channel.send(place)
+                for i in range(0, len(images)):
+                    await message.channel.send(images[i])
+                    await message.channel.send(hourly_data[i])
+        else:
+            await message.channel.send("```Error Input or Nothing to search.........```")
+
+    elif msg_content.startswith('-time'):
+        msg_content = msg_content.split('-time ', 1)
+        if len(msg_content) == 2:
+            content = local_time_result(msg_content[1])
+            if content == "":
+                content = "```No data related to searched place.....```"
+            await message.channel.send(content)
+        else:
+            await message.channel.send("```Error Input or Nothing to search.........```")
+    
+    elif msg_content.startswith('-iplookup'):
+        msg_content = msg_content.split('-iplookup ', 1)
+        if len(msg_content) == 2:
+            content = iplookup_result(msg_content[1])
+            if content == "":
+                content = "```No data related to provided IP.....```"
+            await message.channel.send(content)
+        else:
+            await message.channel.send("```Error Input or Nothing to search.........```")
+
     elif msg_content.startswith('-web'):
         msg_content = msg_content.split('-web ', 1)
         if len(msg_content) == 2:
             content = web_result(msg_content[1])
-            greet = "\nHope this helps!\n"
+            greet = "\n**Hope this helps!**\n"
             await message.channel.send(content + greet)
         else:
+            await message.channel.send("```Error Input or Nothing to search.........```")
+
+    elif msg_content.startswith('-urban'):
+        msg_content = msg_content.split('-urban ', 1)
+        if len(msg_content) == 2:
+            content = dict_search(msg_content[1])
+            if(content == ""):
+                await message.channel.send("```No data related to provided Search on Urban Dictionary.....```")
+            else:
+                await message.channel.send(content)
+        else :
             await message.channel.send("```Error Input or Nothing to search.........```")
 
     elif msg_content.startswith('-nasa'):
@@ -196,28 +293,44 @@ async def on_message(message):
     elif msg_content.startswith('-stkr'):
         msg_content = msg_content.split('-stkr ', 1)
         if len(msg_content) == 2:
-            content = stickr_image(msg_content[1])
+            content = sticker_image(msg_content[1])
             await message.channel.send(content)
         else:
             await message.channel.send("```Error Input or Nothing to search.........```")
-    
-    elif msg_content.startswith('-nsfw'):
-        msg_content = msg_content.split('-nsfw ', 1)
+
+    elif msg_content.startswith('-ping_person'):
+        msg_content = msg_content.split('-ping_person ', 1)
         if len(msg_content) == 2:
-            data = nsfw_search(msg_content[1])
-            porn = nsfw_result(data)
-            images = nsfw_images(data)
-            await message.channel.send(porn)
-            for image in images:
-                await message.channel.send(image)
+            count = 0
+            user = ""
+            
+            try : 
+                data = msg_content[1].split(" ")
+                user = data[0]
+                count = int(data[1])
+                if(count <= 0):
+                    raise Exception("Error")
+                content = "Hello " + "<@" + str(message.author.id) + ">  :upside_down:  :upside_down: \n"
+                content += "Pinging others is not good but still as per your request........"
+    
+            except:
+                content = ""
+
+            if(content == ""):
+                await message.channel.send("```Maybe the person to ping is invalid or count is not in natural-no format```")
+            else:
+                await message.channel.send(content)
+                msg = user + " sorry for ping..... WE LOVE YOU :heart:"
+                for i in range(0, count):
+                    await message.channel.send(msg)
+
         else:
-            await message.channel.send("```Error Input or Nothing to search.........```")
+            await message.channel.send("```Error Input or No-one to Ping.........```")
 
     # (To check ping...........)
     elif msg_content.startswith('-ping'):
         await message.channel.send(f'```{round(client.latency * 1000)}ms```')
-
-
+        
 
 @client.event
 async def on_raw_reaction_add(payload):
@@ -231,6 +344,5 @@ async def on_raw_reaction_add(payload):
             elif (reaction.emoji not in option_emojis):
                 await msg.remove_reaction(payload.emoji, payload.member)            
 
-
 keep_alive()
-client.run(TOKEN)
+client.run(os.getenv('TOKEN'))

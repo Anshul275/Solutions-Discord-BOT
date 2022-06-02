@@ -7,7 +7,7 @@ API_KEY = "5J5ZUI3MBTKL"
 def trend_gif(mainSite):
     endpoint = "/v1/trending"
     url = mainSite + endpoint
-    query = {'key': API_KEY, 'limit': 10, 'media_filter': "minimal"}
+    query = {'key': API_KEY, 'limit': 20, 'media_filter': "minimal"}
 
     response = requests.get(url, params = query)
     json_data = json.loads(response.text)
